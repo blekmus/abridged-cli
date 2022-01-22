@@ -9,6 +9,7 @@ const  { contentList, setContentList, openItem } = require('./content_list')
 const listPage = require('./views/list_page_view')
 const { search, input, inputListeners } = require('./search.js')
 const currentPath = require('./current_path')
+const {contentInfo, setContentInfo} = require('./content_info')
 
 const openDir = async (loc) => {
   await open(loc)
@@ -68,23 +69,27 @@ entryList.on('keypress', (_sender, key) => {
     entryList.down()
   }
 
-  // from entryList into contentList
-  if (key.name === 'enter') {
-    state.currentEntry = entryList.getSelected()
-    setContentList(state.currentEntry)
-    contentList.select(0)
-
-    entryList.detach()
-    search.detach()
-    listPage.append(contentList)
-
-    contentList.focus()
-  }
-
   // open file explorer
   if (key.name === 'o') {
     openDir(state.location)
   }
+
+  // from entryList into contentList
+  if (key.name === 'enter') {
+    state.currentEntry = entryList.getSelected()
+    setContentList(state.currentEntry)
+    setContentInfo(state.currentEntry)
+    contentList.select(0)
+
+    entryList.detach()
+    search.detach()
+
+    listPage.append(contentList)
+    listPage.append(contentInfo)
+
+    contentList.focus()
+  }
+
   screen.render()
 })
 
@@ -102,12 +107,22 @@ contentList.on('keypress', (_sender, key) => {
     openItem(contentList.getSelected())
   }
 
+  // open file explorer
+  if (key.name === 'o') {
+    const selectedEntry = state.entries[state.menuSelected].filter((item) => (
+      item.tagTitle === state.currentEntry
+    ))[0].filename
+    openDir(selectedEntry)
+  }
+
   // from contentList back to entryList
   if (key.name === 'backspace') {
     state.currentEntry = null
     state.currentContentList = null
+    state.currentContentInfo = null
 
     contentList.detach()
+    contentInfo.detach()
 
     if (state.searchQuery !== '') {
       listPage.append(search)
@@ -117,14 +132,6 @@ contentList.on('keypress', (_sender, key) => {
     currentPath.setContent(`Path: ${state.location}`)
 
     entryList.focus()
-  }
-
-  // open file explorer
-  if (key.name === 'o') {
-    const selectedEntry = state.entries[state.menuSelected].filter((item) => (
-      item.tagTitle === state.currentEntry
-    ))[0].filename
-    openDir(selectedEntry)
   }
 
   screen.render()

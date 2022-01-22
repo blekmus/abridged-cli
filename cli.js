@@ -11,9 +11,31 @@ Usage
     abridged-cli
 
 TUI
-    s - search
+    / - search
     o - open dir
     q - exit
+
+    Pressing the 'Left' and 'Right' arrows
+    navigates through the entry types. Clicking
+    the menu items with the mouse also works.
+
+    Press '/' to search. Search only works in the
+    entry list. When searching entry list is non
+    interactive. To make it interactive again the
+    search must be completed by pressing 'Enter'.
+    When typing, pressing 'Delete' will clear the
+    query.
+
+    Pressing 'o' in the entry list menu opens the
+    abridged directory. To visit an entry directory
+    press 'o' inside of an entry item when the
+    content list is in view.
+
+    Scroll using the mouse to navigate faster
+    through a list. However, you cannot open an
+    entry nor can you watch a content item by
+    clicking on it. You must highlight the item
+    and press 'Enter' for it to work.
 `)
 
 

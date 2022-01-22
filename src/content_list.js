@@ -110,6 +110,7 @@ const setContentList = async (currentEntry) => {
 
   contentList.setItems(content)
   currentPath.setContent(`Path: {green-fg}${cleanTags(selectedEntry.tagTitle)}{/green-fg}`)
+
   screen.render()
 }
 

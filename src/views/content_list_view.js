@@ -14,7 +14,7 @@ const contentList = blessed.list({
       bg: 'blue'
     }
   },
-  height: '80%',
+  height: '50%',
   shrink: true,
   top: 3,
   left: 2,
