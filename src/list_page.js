@@ -1,6 +1,8 @@
 const screen = require('./screen')
 const open = require('open')
-
+const { execSync } = require('child_process')
+const path = require('path')
+const { writeFile } = require('fs')
 
 const state = require('./state')
 const { menu, setMenu } = require('./menu')
@@ -9,7 +11,8 @@ const  { contentList, setContentList, openItem } = require('./content_list')
 const listPage = require('./views/list_page_view')
 const { search, input, inputListeners } = require('./search.js')
 const currentPath = require('./current_path')
-const {contentInfo, setContentInfo} = require('./content_info')
+const { contentInfo, setContentInfo, contentInfoAbsent } = require('./content_info')
+
 
 const openDir = async (loc) => {
   await open(loc)
@@ -76,16 +79,18 @@ entryList.on('keypress', (_sender, key) => {
 
   // from entryList into contentList
   if (key.name === 'enter') {
-    state.currentEntry = entryList.getSelected()
+    state.currentEntry = state.entries[state.menuSelected].filter((item) => (
+      item.tagTitle === entryList.getSelected()
+    ))[0]
+
     setContentList(state.currentEntry)
-    setContentInfo(state.currentEntry)
+    setContentInfo(listPage, state.currentEntry)
     contentList.select(0)
 
     entryList.detach()
     search.detach()
 
     listPage.append(contentList)
-    listPage.append(contentInfo)
 
     contentList.focus()
   }
@@ -109,20 +114,44 @@ contentList.on('keypress', (_sender, key) => {
 
   // open file explorer
   if (key.name === 'o') {
-    const selectedEntry = state.entries[state.menuSelected].filter((item) => (
-      item.tagTitle === state.currentEntry
-    ))[0].filename
-    openDir(selectedEntry)
+    openDir(state.currentEntry.filename)
+  }
+
+  // create/edit info file
+  if (key.name === 'i') {
+    if (!process.env.EDITOR && !process.env.VISUAL) {
+      return
+    }
+
+    let editor
+
+    if (process.env.EDITOR) {
+      editor = process.env.EDITOR
+    } else {
+      editor = process.env.VISUAL
+    }
+
+    const loc = path.join(state.currentEntry.filename, 'info.txt')
+    const output = execSync(`${editor} "${loc}"`)
+
+    writeFile(loc, output.toString(), (err) => {
+      if (err) throw err
+    })
+
+    // contentInfoAbsent.detach()
+    // setContentInfo(listPage, state.currentEntry)
+    
+    process.exit(0)
   }
 
   // from contentList back to entryList
   if (key.name === 'backspace') {
     state.currentEntry = null
     state.currentContentList = null
-    state.currentContentInfo = null
 
     contentList.detach()
     contentInfo.detach()
+    contentInfoAbsent.detach()
 
     if (state.searchQuery !== '') {
       listPage.append(search)

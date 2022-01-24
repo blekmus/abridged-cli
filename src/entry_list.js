@@ -40,7 +40,7 @@ const setEntryList = async (entryType, query) => {
         id: uuid(),
         title: title,
         tagTitle: tagTitle,
-        creator: creator ? creator : null,
+        creator: creator ? creator[0] : null,
         filename: absPath,
       })
     })
@@ -68,45 +68,3 @@ const setEntryList = async (entryType, query) => {
 setEntryList(state.menuSelected)
 
 module.exports = { entryList, setEntryList }
-
-
-  // entries = [
-  //   "[2GS Bootlegged] High School Hot x Barz",
-  //   "[2GS Bootlegged] Hustle Art Online",
-  //   "[2GS Bootlegged] Vampire + Swaggit",
-  //   "[Abridgilliance] Dagashi Kashi Abridged",
-  //   "[Baka Oppai] BakaOppai Shorts",
-  //   "[Breviator] Another",
-  //   "[Chessete] Phoenix Wright Rhythms",
-  //   "[eagle8burger] Darker Than Black",
-  //   "[Earl of Bassington] HA x HA",
-  //   "[Grimmjack] Goblin Slayer",
-  //   "[JoyRide Entertainment] Dr. Stone Abridged",
-  //   "[Junk House Studios] Kakegurui Shorts",
-  //   "[Junk House Studios] The Devil is a Part Timer",
-  //   "[Kurosai] Boundary Bridge",
-  //   "[Kurosai] Kurosai Shorts",
-  //   "[MGXAbridged] Mysterious Girlfriend X",
-  //   "[MyToasterIsMoist] Haroohee",
-  //   "[MyToasterIsMoist] Jujutsu Kaisen",
-  //   "[NUMBSKULLS] Overlord Abridged",
-  //   "[PhatDogStudios] That Time I Got Abridged as a Slime",
-  //   "[PowerMadOtaku] Parasyte The Maxim",
-  //   "[PowerManOtaku] Phoenix Wright",
-  //   "[Project Mouthwash] Bleach (S) Abridged",
-  //   "[PSWeasel] My Dumb Academia",
-  //   "[Scourgemaster] Kotoura-san",
-  //   "[The Boiis] Seraph of the End",
-  //   "[The Boiis] Your Lie in April",
-  //   "[The Dastails] Nisekoi",
-  //   "[The Rollin Nolan] Sword Farce Online",
-  //   "[The Schmuck Squad] Re Zero Abridged",
-  //   "[The Shmuck Squad] Akame Ga Kill!",
-  //   "[The Shmuck Squad] MAGI - The Abridged Series of Magic",
-  //   "[The Shmuck Squad] The Seven Deadly Schmucks",
-  //   "[TheWINChestersInc] Supernatural Abridged",
-  //   "[Xcaliborg] The Prince & The Pussy",
-  //   "[YaroShien] Abridged + Vampire",
-  //   "[YaroShien] How to be an Adventurer",
-  //   "[YaroShien] MekakuCity Actors TAS",
-  // ]

@@ -12,11 +12,7 @@ const currentPath = require('./current_path')
 
 
 const setContentList = async (currentEntry) => {
-  const selectedEntry = state.entries[state.menuSelected].filter((item) => (
-    item.tagTitle === currentEntry
-  ))[0]
-
-  let files = await fs.readdir(selectedEntry.filename, { withFileTypes: true })
+  let files = await fs.readdir(currentEntry.filename, { withFileTypes: true })
   files = files.filter((filename) => filename.isFile())
   files = files.filter((filename) => !filename.name.match(/\.(gif|jpe?g|tiff?|png|webp|bmp|txt)$/i))
   files = files.sort((a, b) => naturalCompare(a.name, b.name, { caseInsensitive: true }))
@@ -28,7 +24,7 @@ const setContentList = async (currentEntry) => {
     let title = null
     let tagTitle = ''
 
-    const absPath = path.join(selectedEntry.filename, name)
+    const absPath = path.join(currentEntry.filename, name)
 
     if (state.menuSelected === 'series') {
       const episode = name.match(/^\bep\S*\s*\d*(?:(?:\.(?=\d))\d)?/ig)
@@ -109,7 +105,7 @@ const setContentList = async (currentEntry) => {
   })
 
   contentList.setItems(content)
-  currentPath.setContent(`Path: {green-fg}${cleanTags(selectedEntry.tagTitle)}{/green-fg}`)
+  currentPath.setContent(`Path: {green-fg}${cleanTags(currentEntry.tagTitle)}{/green-fg}`)
 
   screen.render()
 }

@@ -5,27 +5,23 @@ const { contentList } = require('./content_list')
 const state = require('./state')
 const screen = require('./screen')
 const {contentInfo, contentInfoText} = require('./views/content_info_view')
+const contentInfoAbsent = require('./views/content_info_absent_view')
 
 // if clicked move focus back to content list
 contentInfoText.on('focus', () => {
   contentList.focus()
 })
 
-const setContentInfo = async (currentEntry) => {
-  const selectedEntry = state.entries[state.menuSelected].filter((item) => (
-    item.tagTitle === currentEntry
-  ))[0]
-
-  let data
-
+const setContentInfo = async (listPage, currentEntry) => {
   try {
-    data = await fs.readFile(path.join(selectedEntry.filename, 'info.txt'), 'utf8')
+    const data = await fs.readFile(path.join(currentEntry.filename, 'info.txt'), 'utf8')
+    listPage.append(contentInfo)
     contentInfoText.setContent(data)
   } catch {
-    contentInfoText.setContent("Press I to set info file")
+    listPage.append(contentInfoAbsent)
   }
 
   screen.render()
 }
 
-module.exports = {contentInfo, setContentInfo}
+module.exports = {contentInfo, setContentInfo, contentInfoAbsent}
