@@ -36,6 +36,8 @@ module.exports = {
   searchTyping: false,
   searchQuery: '',
 
+  infoFileData: null,
+
   // abridged files parent folder
   location: '',
 }

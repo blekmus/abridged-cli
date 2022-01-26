@@ -15,6 +15,12 @@ contentInfoText.on('focus', () => {
 const setContentInfo = async (listPage, currentEntry) => {
   try {
     const data = await fs.readFile(path.join(currentEntry.filename, 'info.txt'), 'utf8')
+    
+    if (data === '') {
+      throw 'empty info file'
+    }
+
+    state.infoFileData = data
     listPage.append(contentInfo)
     contentInfoText.setContent(data)
   } catch {

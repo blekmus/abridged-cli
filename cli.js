@@ -11,9 +11,10 @@ Usage
     abridged-cli
 
 TUI
+    q - exit
     / - search
     o - open dir
-    q - exit
+    i - add/edit info.txt
 
     Pressing the 'Left' and 'Right' arrows
     navigates through the entry types. Clicking
@@ -36,6 +37,12 @@ TUI
     entry nor can you watch a content item by
     clicking on it. You must highlight the item
     and press 'Enter' for it to work.
+
+    Pressing 'i' inside of an entry (content list)
+    will open the text editor defined by
+    $EDITOR or $VISUAL. You can either edit the
+    existing info.txt file or this will create a
+    new one.
 `)
 
 

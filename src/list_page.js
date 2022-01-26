@@ -1,6 +1,5 @@
 const screen = require('./screen')
 const open = require('open')
-const { execSync } = require('child_process')
 const path = require('path')
 const { writeFile } = require('fs')
 
@@ -25,10 +24,8 @@ listPage.on('element keypress', (_sender, _ch, key) => {
       return
     } else if (state.menuSelected === 'series') {
       setMenu(state.menuSelected, 'shots')
-      state.menuSelected = 'shots'
     } else if (state.menuSelected === 'shots') {
       setMenu(state.menuSelected, 'shorts')
-      state.menuSelected = 'shorts'
     }
   }
   if (key.name === 'left') {
@@ -36,10 +33,8 @@ listPage.on('element keypress', (_sender, _ch, key) => {
       return
     } else if (state.menuSelected === 'shorts') {
       setMenu(state.menuSelected, 'shots')
-      state.menuSelected = 'shots'
     } else if (state.menuSelected === 'shots') {
       setMenu(state.menuSelected, 'series')
-      state.menuSelected = 'series'
     }
   }
 
@@ -123,31 +118,29 @@ contentList.on('keypress', (_sender, key) => {
       return
     }
 
-    let editor
-
-    if (process.env.EDITOR) {
-      editor = process.env.EDITOR
-    } else {
-      editor = process.env.VISUAL
-    }
-
     const loc = path.join(state.currentEntry.filename, 'info.txt')
-    const output = execSync(`${editor} "${loc}"`)
+    const filename = (state.infoFileData) ? loc : null
 
-    writeFile(loc, output.toString(), (err) => {
-      if (err) throw err
+    screen.readEditor({ name: 'info.txt', filename }, (_err, data) => {
+      // if editor is empty
+      if (!data || data === '') return
+
+      // if there's data save it
+      writeFile(loc, data, (err) => {
+        if (err) throw err
+
+        // rerender and display new info.txt
+        contentInfoAbsent.detach()
+        setContentInfo(listPage, state.currentEntry)
+      })
     })
-
-    // contentInfoAbsent.detach()
-    // setContentInfo(listPage, state.currentEntry)
-    
-    process.exit(0)
   }
 
   // from contentList back to entryList
   if (key.name === 'backspace') {
     state.currentEntry = null
     state.currentContentList = null
+    state.infoFileData = null
 
     contentList.detach()
     contentInfo.detach()

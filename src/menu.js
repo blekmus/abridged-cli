@@ -14,7 +14,6 @@ menuSeries.on('click', () => {
   }
 
   setMenu(state.menuSelected, 'series')
-  state.menuSelected = 'series'
   screen.render()
 })
 menuShots.on('click', () => {
@@ -23,7 +22,6 @@ menuShots.on('click', () => {
   }
 
   setMenu(state.menuSelected, 'shots')
-  state.menuSelected = 'shots'
   screen.render()
 })
 menuShorts.on('click', () => {
@@ -32,7 +30,6 @@ menuShorts.on('click', () => {
   }
 
   setMenu(state.menuSelected, 'shorts')
-  state.menuSelected = 'shorts'
   screen.render()
 })
 
@@ -51,11 +48,12 @@ const setMenu = (oldItem, currentItem) => {
     menuShorts.setContent("Shorts")
   }
 
-  // if current page is inside an entry page
+  // if current page is inside an entry page (content list)
   // take it back to the entry list 
   if (state.currentContentList) {
     state.currentEntry = null
     state.currentContentList = null
+    state.infoFileData = null
     listPage.remove(contentList)
 
     if (state.searchQuery !== '') {
@@ -75,6 +73,9 @@ const setMenu = (oldItem, currentItem) => {
 
   // select the first entry
   entryList.select(0)
+
+  // set current menu state
+  state.menuSelected = currentItem
 
   // set menu
   if (currentItem === 'series') {
