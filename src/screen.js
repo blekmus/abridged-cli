@@ -1,4 +1,4 @@
-const blessed = require('blessed');
+const blessed = require('../lib/blessed');
 
 module.exports = blessed.screen({
   smartCSR: true,

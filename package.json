@@ -9,7 +9,6 @@
     "node": ">=10"
   },
   "dependencies": {
-    "blessed": "^0.1.81",
     "conf": "^10.1.1",
     "match-sorter": "^6.3.1",
     "meow": "^9.0.0",

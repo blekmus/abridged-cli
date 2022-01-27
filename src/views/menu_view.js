@@ -1,4 +1,4 @@
-const blessed = require('blessed')
+const blessed = require('../../lib/blessed')
 
 const menu = blessed.box({
   left: 2,

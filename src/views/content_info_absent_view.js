@@ -1,4 +1,4 @@
-const blessed = require("blessed")
+const blessed = require('../../lib/blessed')
 
 const contentInfoAbsent = blessed.text({
   content: `Info: {green-fg}Press i to add info file{/green-fg}`,

@@ -1,4 +1,4 @@
-const blessed = require('blessed')
+const blessed = require('../../lib/blessed')
 
 const contentInfo = blessed.box({
   width: '100%-2',

@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 const uuid = require('uuid').v4
 const open = require('open')
 const naturalCompare = require('string-natural-compare')
-const { cleanTags } = require('blessed')
+const { cleanTags } = require('../lib/blessed')
 
 const state = require('./state')
 const screen = require('./screen')

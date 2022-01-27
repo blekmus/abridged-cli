@@ -1,4 +1,4 @@
-const blessed = require('blessed')
+const blessed = require('../../lib/blessed')
 
 const search = blessed.box({
   left: 2,
