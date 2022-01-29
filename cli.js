@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 const Conf = require('conf')
-const fs = require('fs')
-const prompt = require('prompt')
-const path = require('path');
+const { access } = require('fs/promises')
+const { constants } = require('fs')
+const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
-require('pretty-error').start();
+const { execSync } = require('child_process')
+const { join } = require('path')
 
-meow(`
+require('pretty-error').start()
+
+const args = meow(`
 Usage
-    abridged-cli
+    abridged-cli [OPTIONS]
+
+OPTIONS
+    -s, --server   
+    Springs up a python FTP server on 0.0.0.0 for the abridged folder
 
 TUI
     q - exit
@@ -43,44 +50,85 @@ TUI
     $EDITOR or $VISUAL. You can either edit the
     existing info.txt file or this will create a
     new one.
-`)
-
-
-const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'))
-
-const config = new Conf({
-  configName: packageJson.name,
-  schema: {
-    location: { type: 'string' }
-  }
+`, {
+	flags: {
+		server: {
+			type: 'boolean',
+			alias: 's'
+		}
+	}
 })
 
-
-if (!config.get('location')) {
-  console.log('Abridged directory path not set')
-  prompt.message = "Enter Location";
-  prompt.delimiter = ""
-  prompt.get({
-    properties: {
-      location: {
-        description: " (path):",
-        required: true,
-        type: 'string',
-
-      }
-    }
-  }, (_err, result) => {
-    config.set('location', result.location)
+async function main() {
+  const config = new Conf({
+    schema: {
+      location: { type: 'string' },
+      server_username: { type: 'string' },
+      server_password: { type: 'string' },
+      server_port: { type: 'number', default: 21 },
+    },
+    clearInvalidConfig: true,
   })
-} else {
-  try {
-    fs.accessSync(config.get('location'))
-  } catch {
-    console.log('Cannot access abridged directory')
-    console.log('Path: ' + config.get('location'))
-    console.log('Config Path: ' + config.path)
+
+  // if location isn't set, set it
+  // and check if it can be accessed
+  if (!config.get('location')) {
+    console.log('Abridged directory path not set')
+    const locationPrompt = new EntoliPrompt('Enter location (path):');
+    const response = await locationPrompt()
+
+    // checking if input dir can be accessed
+    try {
+      await access(response, constants.R_OK)
+      config.set('location', response)
+    } catch {
+      console.log(`Cannot access directory ${response}`)
+      return
+    }
+  }
+  else {
+    // checking if abridged dir can be accessed
+    try {
+      const location = config.get('location')
+      await access(location, constants.R_OK)
+    } catch {
+      console.log('Cannot access abridged directory')
+      console.log('Path: ' + config.get('location'))
+      console.log('Config Path: ' + config.path)
+      return
+    }
+  }
+
+  if (args.flags.server) {
+    // set server info if they don't exist
+    if (!config.get('server_username')) {
+      console.log('Setting up FTP server')
+      const usernamePrompt = new EntoliPrompt('Enter username:')
+      const passwordPormpt = new EntoliPrompt('Enter password:')
+      const portPrompt = new EntoliPrompt('Enter port (21):')
+
+      const username = await usernamePrompt()
+      const password = await passwordPormpt()
+      const port = await portPrompt()
+
+      config.set('server_username', username)
+      config.set('server_password', password)
+      config.set('server_port', Number(port))
+    }
+
+    const username = config.get('server_username')
+    const password = config.get('server_password')
+    const port = config.get('server_port')
+    const location = config.get('location')
+
+    const args = `sudo python3 -u ${join(__dirname, '/server/server.py')} -u ${username} -P ${password} -p ${port} -l ${location}`
+    // console.log(args)
+    console.log('Running Server')
+    execSync(args)
     return
   }
 
   require('./src/blessed')(config.get('location'))
 }
+
+main()
