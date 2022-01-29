@@ -5,7 +5,8 @@ const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
 const { execSync } = require('child_process')
-const { join } = require('path')
+const { join, parse } = require('path')
+const simpleFormatter = require('./lib/formatters/simple_formatter')
 
 require('pretty-error').start()
 
@@ -13,9 +14,14 @@ const args = meow(`
 Usage
     abridged-cli [OPTIONS]
 
+Abridged Anime. But in the Terminal!
+
 OPTIONS
     -s, --server   
     Springs up a python FTP server on 0.0.0.0 for the abridged folder
+
+    -f, --format
+    Formats files in supplied/current path. Only supports Shorts & Shots
 
 TUI
     q - exit
@@ -23,14 +29,14 @@ TUI
     o - open dir
     i - add/edit info.txt
 
-    Pressing the 'Left' and 'Right' arrows
-    navigates through the entry types. Clicking
-    the menu items with the mouse also works.
+    Press 'Left' and 'Right' arrows to navigate
+    through entry types. Clicking menu items with the 
+    cursor does the same thing.
 
     Press '/' to search. Search only works in the
-    entry list. When searching entry list is non
-    interactive. To make it interactive again the
-    search must be completed by pressing 'Enter'.
+    entry list page. When searching, the entry list 
+    is non interactive. To make it interactive again
+    the search must be completed by pressing 'Enter'.
     When typing, pressing 'Delete' will clear the
     query.
 
@@ -55,7 +61,11 @@ TUI
 		server: {
 			type: 'boolean',
 			alias: 's'
-		}
+    },
+    format: {
+      type: 'string',
+      alias: 'f',
+    }
 	}
 })
 
@@ -69,6 +79,22 @@ async function main() {
     },
     clearInvalidConfig: true,
   })
+
+  // run folder formatter
+  if (args.flags.format === '' || args.flags.format) {
+    const formatDir = join(process.cwd(), args.flags.format)
+    const base = parse(formatDir).base
+
+    // if dir not shorts or shots exit
+    if (base !== 'Shorts' && base !== 'Shots') {
+      return
+    }
+
+    // run shorts n shots formatter
+    await simpleFormatter(formatDir)
+
+    return
+  }
 
   // if location isn't set, set it
   // and check if it can be accessed
@@ -99,6 +125,7 @@ async function main() {
     }
   }
 
+  // run FTP server
   if (args.flags.server) {
     // set server info if they don't exist
     if (!config.get('server_username')) {
@@ -122,7 +149,6 @@ async function main() {
     const location = config.get('location')
 
     const args = `sudo python3 -u ${join(__dirname, '/server/server.py')} -u ${username} -P ${password} -p ${port} -l ${location}`
-    // console.log(args)
     console.log('Running Server')
     execSync(args)
     return

@@ -1,6 +1,5 @@
 # abridged-cli
-Abridged Anime, but in the Terminal!
-
+Abridged Anime. But in the Terminal! <br>
 I use this CLI to manage and watch my local collection/archive of abridged anime.
 
 ## File Structure of Abridged Directory
@@ -37,39 +36,44 @@ Abridged/
 ```
 Usage
     abridged-cli [OPTIONS]
-    
+
+Abridged Anime. But in the Terminal!
+
 OPTIONS
     -s, --server   
     Springs up a python FTP server on 0.0.0.0 for the abridged folder
-    
+
+    -f, --format
+    Formats files in supplied/current path. Only supports Shorts & Shots
+
 TUI
     q - exit
     / - search
     o - open dir
     i - add/edit info.txt
-    
-    Pressing the 'Left' and 'Right' arrows
-    navigates through the entry types. Clicking
-    the menu items with the mouse also works.
-    
+
+    Press 'Left' and 'Right' arrows to navigate
+    through entry types. Clicking menu items with the 
+    cursor does the same thing.
+
     Press '/' to search. Search only works in the
-    entry list. When searching entry list is non
-    interactive. To make it interactive again the
-    search must be completed by pressing 'Enter'.
+    entry list page. When searching, the entry list 
+    is non interactive. To make it interactive again
+    the search must be completed by pressing 'Enter'.
     When typing, pressing 'Delete' will clear the
     query.
-    
+
     Pressing 'o' in the entry list menu opens the
     abridged directory. To visit an entry directory
     press 'o' inside of an entry item when the
     content list is in view.
-    
+
     Scroll using the mouse to navigate faster
     through a list. However, you cannot open an
     entry nor can you watch a content item by
     clicking on it. You must highlight the item
     and press 'Enter' for it to work.
-    
+
     Pressing 'i' inside of an entry (content list)
     will open the text editor defined by
     $EDITOR or $VISUAL. You can either edit the
