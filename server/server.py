@@ -1,4 +1,5 @@
 # needs to be run as root for some reason
+# and now it doesn't need root for some reason... how?
 
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler

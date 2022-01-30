@@ -4,9 +4,9 @@ const { access } = require('fs/promises')
 const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
-const { execSync } = require('child_process')
 const { join, parse } = require('path')
 const simpleFormatter = require('./lib/formatters/simple_formatter')
+const { ftpServer } = require('./lib/ftp_server/server')
 
 require('pretty-error').start()
 
@@ -87,6 +87,7 @@ async function main() {
 
     // if dir not shorts or shots exit
     if (base !== 'Shorts' && base !== 'Shots') {
+      console.log('Error: Not in a supported directory.')
       return
     }
 
@@ -143,17 +144,19 @@ async function main() {
       config.set('server_port', Number(port))
     }
 
+    // get credentials
     const username = config.get('server_username')
     const password = config.get('server_password')
     const port = config.get('server_port')
     const location = config.get('location')
+    const serverPath = join(__dirname, '/server/server.py')
 
-    const args = `sudo python3 -u ${join(__dirname, '/server/server.py')} -u ${username} -P ${password} -p ${port} -l ${location}`
-    console.log('Running Server')
-    execSync(args)
+    ftpServer(username, password, port, location, serverPath)
+
     return
   }
 
+  // run TUI
   require('./src/blessed')(config.get('location'))
 }
 

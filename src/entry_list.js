@@ -7,6 +7,7 @@ const { matchSorter } = require('match-sorter')
 
 const state = require('./state')
 const entryList = require('./views/entry_list_view')
+const currentPath = require('./current_path')
 
 
 const setEntryList = async (entryType, query) => {
@@ -60,6 +61,7 @@ const setEntryList = async (entryType, query) => {
     return entry.tagTitle
   })
 
+  currentPath.setContent(`Path: ${state.location} (${entries.length})`)
   entryList.setItems(entries)
   screen.render()
 }

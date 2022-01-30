@@ -151,7 +151,7 @@ contentList.on('keypress', (_sender, key) => {
     }
 
     listPage.append(entryList)
-    currentPath.setContent(`Path: ${state.location}`)
+    currentPath.setContent(`Path: ${state.location} (${state.entries[state.menuSelected].length})`)
 
     entryList.focus()
   }
