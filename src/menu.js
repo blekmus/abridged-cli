@@ -5,6 +5,7 @@ const { contentList } = require('./content_list')
 const listPage = require('./views/list_page_view')
 const { menu, menuSeries, menuShots, menuShorts } = require('./views/menu_view')
 const { search } = require('./search')
+const { contentInfo, contentInfoAbsent } = require('./content_info')
 
 
 // mouse clicks
@@ -55,6 +56,8 @@ const setMenu = (oldItem, currentItem) => {
     state.currentContentList = null
     state.infoFileData = null
     listPage.remove(contentList)
+    listPage.remove(contentInfo)
+    listPage.remove(contentInfoAbsent)
 
     if (state.searchQuery !== '') {
       listPage.append(search)
