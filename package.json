@@ -9,6 +9,7 @@
     "node": ">=10"
   },
   "dependencies": {
+    "chalk": "^4.1.2",
     "conf": "^10.1.1",
     "entoli": "^1.4.3",
     "match-sorter": "^6.3.1",

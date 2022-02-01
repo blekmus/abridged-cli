@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const Conf = require('conf')
 const { access } = require('fs/promises')
 const { constants } = require('fs')
@@ -7,51 +8,52 @@ const meow = require('meow')
 const { join, parse } = require('path')
 const simpleFormatter = require('./lib/formatters/simple_formatter')
 const { ftpServer } = require('./lib/ftp_server/server')
+const chalk = require('chalk')
 
 require('pretty-error').start()
 
 const args = meow(`
-Usage
-    abridged-cli [OPTIONS]
+USAGE
+    ${chalk.blue('abridged-cli [OPTIONS]')}
 
 Abridged Anime. But in the Terminal!
 
 OPTIONS
-    -s, --server   
+    ${chalk.blue('-s, --server')} 
     Springs up a python FTP server on 0.0.0.0 for the abridged folder
 
-    -f, --format
+    ${chalk.blue('-f, --format')}
     Formats files in supplied/current path. Only supports Shorts & Shots
 
 TUI
-    q - exit
-    / - search
-    o - open dir
-    i - add/edit info.txt
+    ${chalk.blue('q')} - exit
+    ${chalk.blue('/')} - search
+    ${chalk.blue('o')} - open dir
+    ${chalk.blue('a')} - add/edit info.txt
 
-    Press 'Left' and 'Right' arrows to navigate
-    through entry types. Clicking menu items with the 
+    Press ${chalk.blue('Left')} and ${chalk.blue('Right')} arrows to navigate
+    through entry types. Clicking menu items with the
     cursor does the same thing.
 
-    Press '/' to search. Search only works in the
-    entry list page. When searching, the entry list 
+    Press ${chalk.blue('/')} to search. Search only works in the
+    entry list page. When searching, the entry list
     is non interactive. To make it interactive again
-    the search must be completed by pressing 'Enter'.
-    When typing, pressing 'Delete' will clear the
+    the search must be completed by pressing ${chalk.blue('Enter')}.
+    When typing, pressing ${chalk.blue('Delete')} will clear the
     query.
 
-    Pressing 'o' in the entry list menu opens the
+    Pressing ${chalk.blue('o')} in the entry list menu opens the
     abridged directory. To visit an entry directory
-    press 'o' inside of an entry item when the
+    press ${chalk.blue('o')} inside of an entry item when the
     content list is in view.
 
     Scroll using the mouse to navigate faster
     through a list. However, you cannot open an
     entry nor can you watch a content item by
     clicking on it. You must highlight the item
-    and press 'Enter' for it to work.
+    and press ${chalk.blue('Enter')} for it to work.
 
-    Pressing 'i' inside of an entry (content list)
+    Pressing ${chalk.blue('i')} inside of an entry (content list)
     will open the text editor defined by
     $EDITOR or $VISUAL. You can either edit the
     existing info.txt file or this will create a
@@ -87,7 +89,7 @@ async function main() {
 
     // if dir not shorts or shots exit
     if (base !== 'Shorts' && base !== 'Shots') {
-      console.log('Error: Not in a supported directory.')
+      console.log(chalk.red('Error: Not in a supported directory'))
       return
     }
 
@@ -109,7 +111,7 @@ async function main() {
       await access(response, constants.R_OK)
       config.set('location', response)
     } catch {
-      console.log(`Cannot access directory ${response}`)
+      console.log(chalk.red(`Error: Cannot access directory ${response}`))
       return
     }
   }
@@ -119,9 +121,9 @@ async function main() {
       const location = config.get('location')
       await access(location, constants.R_OK)
     } catch {
-      console.log('Cannot access abridged directory')
-      console.log('Path: ' + config.get('location'))
-      console.log('Config Path: ' + config.path)
+      console.log(chalk.red('Error: Cannot access abridged directory'))
+      console.log('Abridged Path: ' + chalk.blue(config.get('location')))
+      console.log('Config Path:   ' + chalk.blue(config.path))
       return
     }
   }
