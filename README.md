@@ -34,17 +34,17 @@ Abridged/
 
 ## Help
 ```
-Usage
+USAGE
     abridged-cli [OPTIONS]
 
 Abridged Anime. But in the Terminal!
 
 OPTIONS
-    -s, --server   
+    -s, --server
     Springs up a python FTP server on 0.0.0.0 for the abridged folder
 
     -f, --format
-    Formats files in supplied/current path. Only supports Shorts & Shots
+    Formats Shorts & Shots entries to the standard structure
 
 TUI
     q - exit
@@ -53,11 +53,11 @@ TUI
     i - add/edit info.txt
 
     Press 'Left' and 'Right' arrows to navigate
-    through entry types. Clicking menu items with the 
+    through entry types. Clicking menu items with the
     cursor does the same thing.
 
     Press '/' to search. Search only works in the
-    entry list page. When searching, the entry list 
+    entry list page. When searching, the entry list
     is non interactive. To make it interactive again
     the search must be completed by pressing 'Enter'.
     When typing, pressing 'Delete' will clear the

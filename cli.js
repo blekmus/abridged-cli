@@ -5,7 +5,7 @@ const { access } = require('fs/promises')
 const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
-const { join, parse } = require('path')
+const { join } = require('path')
 const simpleFormatter = require('./lib/formatters/simple_formatter')
 const { ftpServer } = require('./lib/ftp_server/server')
 const chalk = require('chalk')
@@ -23,13 +23,13 @@ OPTIONS
     Springs up a python FTP server on 0.0.0.0 for the abridged folder
 
     ${chalk.blue('-f, --format')}
-    Formats files in supplied/current path. Only supports Shorts & Shots
+    Formats Shorts & Shots entries to the standard structure
 
 TUI
     ${chalk.blue('q')} - exit
     ${chalk.blue('/')} - search
     ${chalk.blue('o')} - open dir
-    ${chalk.blue('a')} - add/edit info.txt
+    ${chalk.blue('i')} - add/edit info.txt
 
     Press ${chalk.blue('Left')} and ${chalk.blue('Right')} arrows to navigate
     through entry types. Clicking menu items with the
@@ -65,7 +65,7 @@ TUI
 			alias: 's'
     },
     format: {
-      type: 'string',
+      type: 'boolean',
       alias: 'f',
     }
 	}
@@ -81,23 +81,6 @@ async function main() {
     },
     clearInvalidConfig: true,
   })
-
-  // run folder formatter
-  if (args.flags.format === '' || args.flags.format) {
-    const formatDir = join(process.cwd(), args.flags.format)
-    const base = parse(formatDir).base
-
-    // if dir not shorts or shots exit
-    if (base !== 'Shorts' && base !== 'Shots') {
-      console.log(chalk.red('Error: Not in a supported directory'))
-      return
-    }
-
-    // run shorts n shots formatter
-    await simpleFormatter(formatDir)
-
-    return
-  }
 
   // if location isn't set, set it
   // and check if it can be accessed
@@ -126,6 +109,12 @@ async function main() {
       console.log('Config Path:   ' + chalk.blue(config.path))
       return
     }
+  }
+
+  // run shots n shots formatter
+  if (args.flags.format) {
+    await simpleFormatter(config.get('location'))
+    return
   }
 
   // run FTP server
