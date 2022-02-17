@@ -46,6 +46,9 @@ OPTIONS
     -f, --format
     Formats Shorts & Shots entries to the standard structure
 
+    -m, --metadata
+    Check and fix video file metadata of all entries
+
 TUI
     q - exit
     / - search

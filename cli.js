@@ -8,6 +8,7 @@ const meow = require('meow')
 const { join } = require('path')
 const simpleFormatter = require('./lib/formatters/simple_formatter')
 const { ftpServer } = require('./lib/ftp_server/server')
+const { metadataChecker } = require('./lib/metadata/metadata.js')
 const chalk = require('chalk')
 
 require('pretty-error').start()
@@ -20,10 +21,13 @@ Abridged Anime. But in the Terminal!
 
 OPTIONS
     ${chalk.blue('-s, --server')} 
-    Springs up a python FTP server on 0.0.0.0 for the abridged folder
+    Spring up FTP server on 0.0.0.0 for the abridged folder
 
     ${chalk.blue('-f, --format')}
-    Formats Shorts & Shots entries to the standard structure
+    Format Shorts & Shots entries as per the standard structure
+
+    ${chalk.blue('-m, --metadata')}
+    Check and fix video file metadata of all entries
 
 TUI
     ${chalk.blue('q')} - exit
@@ -67,6 +71,10 @@ TUI
     format: {
       type: 'boolean',
       alias: 'f',
+    },
+    metadata: {
+      type: 'boolean',
+      alias: 'm',
     }
 	}
 })
@@ -140,9 +148,18 @@ async function main() {
     const password = config.get('server_password')
     const port = config.get('server_port')
     const location = config.get('location')
-    const serverPath = join(__dirname, '/server/server.py')
+    const serverPath = join(__dirname, '/lib/ftp_server/server.py')
 
     ftpServer(username, password, port, location, serverPath)
+
+    return
+  }
+
+  // run metadata checker
+  if (args.flags.metadata) {
+    const location = config.get('location')
+    const scriptPath = join(__dirname, '/lib/metadata/metadata.py')
+    metadataChecker(scriptPath, location)
 
     return
   }
