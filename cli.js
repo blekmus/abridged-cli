@@ -5,7 +5,7 @@ const { access } = require('fs/promises')
 const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
-const { join } = require('path')
+const { join, resolve } = require('path')
 const simpleFormatter = require('./lib/formatters/simple_formatter')
 const { ftpServer } = require('./lib/ftp_server/server')
 const { metadataChecker } = require('./lib/metadata/metadata.js')
@@ -21,13 +21,14 @@ Abridged Anime. But in the Terminal!
 
 OPTIONS
     ${chalk.blue('-s, --server')} 
-    Spring up FTP server on 0.0.0.0 for the abridged folder
+    Spring up FTP server on 0.0.0.0:2121 for the abridged folder
 
     ${chalk.blue('-f, --format')}
     Format Shorts & Shots entries as per the standard structure
 
     ${chalk.blue('-m, --metadata')}
     Check and fix video file metadata of all entries
+    Optionally, specify a specify path. Entry/Entry type dirs are valid
 
 TUI
     ${chalk.blue('q')} - exit
@@ -73,7 +74,7 @@ TUI
       alias: 'f',
     },
     metadata: {
-      type: 'boolean',
+      type: 'string',
       alias: 'm',
     }
 	}
@@ -156,11 +157,16 @@ async function main() {
   }
 
   // run metadata checker
-  if (args.flags.metadata) {
+  if (typeof args.flags.metadata === 'string') {
     const location = config.get('location')
     const scriptPath = join(__dirname, '/lib/metadata/metadata.py')
-    metadataChecker(scriptPath, location)
 
+    if (args.flags.metadata === '') {
+      metadataChecker(scriptPath, location)
+    } else {
+      const specificPath = resolve(args.flags.metadata)
+      metadataChecker(scriptPath, specificPath)
+    }
     return
   }
 
