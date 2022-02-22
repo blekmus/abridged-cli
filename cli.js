@@ -6,7 +6,7 @@ const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
 const { join, resolve } = require('path')
-const simpleFormatter = require('./lib/formatters/simple_formatter')
+const structureFormatter = require('./lib/formatter/formatter')
 const { ftpServer } = require('./lib/ftp_server/server')
 const { metadataChecker } = require('./lib/metadata/metadata.js')
 const chalk = require('chalk')
@@ -122,7 +122,7 @@ async function main() {
 
   // run shots n shots formatter
   if (args.flags.format) {
-    await simpleFormatter(config.get('location'))
+    await structureFormatter(config.get('location'))
     return
   }
 
