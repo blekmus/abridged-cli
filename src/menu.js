@@ -3,54 +3,44 @@ const state = require('./state')
 const { setEntryList, entryList } = require('./entry_list')
 const { contentList } = require('./content_list')
 const listPage = require('./views/list_page_view')
-const { menu, menuSeries, menuShots, menuShorts } = require('./views/menu_view')
+const { menu, entryMenues } = require('./views/menu_view')
 const { search } = require('./search')
 const { contentInfo, contentInfoAbsent } = require('./content_info')
 
 
-// mouse clicks
-menuSeries.on('click', () => {
-  if (state.menuSelected === 'series') {
-    return
-  }
+// mouse click handler
+state.entryTypes.forEach((entryType) => {
+  entryMenues[entryType].on('click', () => {
+    if (state.menuSelected === entryType) {
+      return
+    }
 
-  setMenu(state.menuSelected, 'series')
-  screen.render()
-})
-menuShots.on('click', () => {
-  if (state.menuSelected === 'shots') {
-    return
-  }
+    setMenu(state.menuSelected, entryType)
+    screen.render()
+  })
 
-  setMenu(state.menuSelected, 'shots')
-  screen.render()
-})
-menuShorts.on('click', () => {
-  if (state.menuSelected === 'shorts') {
-    return
-  }
-
-  setMenu(state.menuSelected, 'shorts')
-  screen.render()
+  // can't seem to focus entrylist any other way
+  entryMenues[entryType].on('keypress', (_sender, key) => { 
+    if (key.name === 'up') {
+      entryList.focus()
+      entryList.up()
+    }
+    if (key.name === 'down') {
+      entryList.focus()
+      entryList.down()
+    }
+  })
 })
 
-// handle visually setting menu and logic 
-// surrounding it, like list changes
+// handle visual and logical aspect of the menu
 const setMenu = (oldItem, currentItem) => {
 
-  // reset
-  if (oldItem === 'series') {
-    menuSeries.setContent("Series")
-  }
-  if (oldItem === 'shots') {
-    menuShots.setContent("Shots")
-  }
-  if (oldItem === 'shorts') {
-    menuShorts.setContent("Shorts")
+  // remove all styles from old item
+  if (oldItem) {
+    entryMenues[oldItem].setContent(oldItem)
   }
 
-  // if current page is inside an entry page (content list)
-  // take it back to the entry list 
+  // if current page is a content list, take back to entry list
   if (state.currentContentList) {
     state.currentEntry = null
     state.currentContentList = null
@@ -80,21 +70,11 @@ const setMenu = (oldItem, currentItem) => {
   // set current menu state
   state.menuSelected = currentItem
 
-  // set menu
-  if (currentItem === 'series') {
-    menuSeries.setContent("{blue-fg}{underline}Series{/underline}{/blue-bg}")
-    return
-  }
-  if (currentItem === 'shots') {
-    menuShots.setContent("{blue-fg}{underline}Shots{/underline}{/blue-bg}")
-    return
-  }
-  if (currentItem === 'shorts') {
-    menuShorts.setContent("{blue-fg}{underline}Shorts{/underline}{/blue-bg}")
-    return
-  }
-}
+  // set styles to currentItem
+  entryMenues[currentItem].setContent(`{blue-fg}{underline}${currentItem}{/underline}{/blue-bg}`)
 
+  return
+}
 
 // default
 setMenu(false, state.menuSelected)

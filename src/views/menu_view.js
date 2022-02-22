@@ -1,4 +1,5 @@
 const blessed = require('../../lib/blessed')
+const state = require('../state')
 
 const menu = blessed.box({
   left: 2,
@@ -7,30 +8,29 @@ const menu = blessed.box({
   top: 1,
 })
 
-const menuSeries = blessed.text({
-  content: 'Series',
-  parent: menu,
-  clickable: true,
-  tags: true,
-  keyable: true,
-})
+entryMenues = state.entryTypes.reduce((acc, current) => {
+  let marginLeft
 
-const menuShots = blessed.text({
-  content: 'Shots',
-  parent: menu,
-  clickable: true,
-  tags: true,
-  left: 8,
-  keyable: true,
-})
+  // resolve margin
+  if (state.entryTypes.indexOf(current) === 0) {
+    marginLeft = 0
+  } else {
+    // calculate the length + 3 of all previous entry
+    const entries_to_left = state.entryTypes.slice(0, state.entryTypes.indexOf(current))
+    marginLeft = entries_to_left.reduce((acc, current) => acc + current.length + 2, 0)
+  }
 
-const menuShorts = blessed.text({
-  content: 'Shorts',
-  parent: menu,
-  clickable: true,
-  tags: true,
-  left: 15,
-  keyable: true,
-})
+  return {
+    ...acc,
+    [current]: blessed.text({
+      content: current,
+      parent: menu,
+      clickable: true,
+      tags: true,
+      left: marginLeft,
+      keyable: true,
+    })
+  }
+}, {})
 
-module.exports = { menu, menuSeries, menuShots, menuShorts }
+module.exports = { menu, entryMenues }

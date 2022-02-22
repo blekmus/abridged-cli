@@ -1,12 +1,10 @@
 module.exports = {
-  menuSelected: 'series', // series | shorts | shots
+  entryTypes: [],
 
-  entries: {
-    series: [],
-    shots: [],
-    shorts: [],
-  },
-  // entries.series = [
+  menuSelected: '', // Series | Shorts | Shots
+
+  entries: {},
+  // entries.Series = [
   //   "[2GS Bootlegged] High School Hot x Barz",
   //   "[2GS Bootlegged] Hustle Art Online",
   // ]

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const Conf = require('conf')
-const { access } = require('fs/promises')
+const { access, readdir } = require('fs/promises')
 const { constants } = require('fs')
 const { EntoliPrompt } = require('entoli')
 const meow = require('meow')
@@ -64,10 +64,10 @@ TUI
     existing info.txt file or this will create a
     new one.
 `, {
-	flags: {
-		server: {
-			type: 'boolean',
-			alias: 's'
+  flags: {
+    server: {
+      type: 'boolean',
+      alias: 's'
     },
     format: {
       type: 'boolean',
@@ -77,7 +77,7 @@ TUI
       type: 'string',
       alias: 'm',
     }
-	}
+  }
 })
 
 async function main() {
@@ -170,8 +170,22 @@ async function main() {
     return
   }
 
+  // get entry type directories
+  let entryTypes = await readdir(config.get('location'), { withFileTypes: true })
+  entryTypes = entryTypes.filter(entry => entry.isDirectory())
+
+  // check if entryTypes is empty
+  if (!entryTypes.length) {
+    console.log(chalk.red('Error: No entry types found'))
+    console.log('Abridged Path: ' + chalk.blue(config.get('location')))
+    console.log('Config Path:   ' + chalk.blue(config.path))
+    return
+  }
+
+  entryTypes = entryTypes.map(entryType => entryType.name)
+
   // run TUI
-  require('./src/blessed')(config.get('location'))
+  require('./src/blessed')(config.get('location'), entryTypes)
 }
 
 main()

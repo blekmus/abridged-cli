@@ -1,7 +1,9 @@
 const state = require('./state')
 
-function main(location) {
+function main(location, entryTypes) {
   state.location = location
+  state.entryTypes = entryTypes
+  state.menuSelected = entryTypes[0]
 
   const screen = require('./screen')
   const listPage = require('./list_page')

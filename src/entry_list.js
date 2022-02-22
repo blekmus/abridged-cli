@@ -15,9 +15,8 @@ const setEntryList = async (entryType, query) => {
   let entries = state.entries[entryType]
 
   // if entry data not already in state bring it in
-  if (!entries.length) {
-    const page = entryType[0].toUpperCase() + entryType.slice(1)
-    const loc = path.join(state.location, page)
+  if (!entries || !entries.length) {
+    const loc = path.join(state.location, entryType)
   
     let dirs = await fs.readdir(loc, { withFileTypes: true })
     dirs = dirs.filter((filename) => filename.isDirectory())

@@ -20,21 +20,17 @@ const openDir = async (loc) => {
 listPage.on('element keypress', (_sender, _ch, key) => {
   // menu navigation
   if (key.name === 'right') {
-    if (state.menuSelected === 'shorts') {
-      return
-    } else if (state.menuSelected === 'series') {
-      setMenu(state.menuSelected, 'shots')
-    } else if (state.menuSelected === 'shots') {
-      setMenu(state.menuSelected, 'shorts')
+    const currentIndex = state.entryTypes.indexOf(state.menuSelected)
+
+    if (currentIndex < state.entryTypes.length - 1) {
+      setMenu(state.menuSelected, state.entryTypes[currentIndex + 1])
     }
   }
   if (key.name === 'left') {
-    if (state.menuSelected === 'series') {
-      return
-    } else if (state.menuSelected === 'shorts') {
-      setMenu(state.menuSelected, 'shots')
-    } else if (state.menuSelected === 'shots') {
-      setMenu(state.menuSelected, 'series')
+    const currentIndex = state.entryTypes.indexOf(state.menuSelected)
+
+    if (currentIndex > 0) {
+      setMenu(state.menuSelected, state.entryTypes[currentIndex - 1])
     }
   }
 
