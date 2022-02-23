@@ -5,13 +5,13 @@ from rich.text import Text
 from datetime import datetime
 from rich.console import Console
 import argparse
-import os
 import ffmpeg
 import shutil
 from os import path
 import subprocess
 import json
 from yt_dlp import YoutubeDL
+import os
 
 # Init args
 parser = argparse.ArgumentParser(
@@ -21,17 +21,23 @@ parser.add_argument('location',
                     type=str,
                     nargs=1,
                     help='Path to abridged directory')
+parser.add_argument('specific',
+                    metavar='PATH',
+                    type=str,
+                    nargs=1,
+                    help='Specific path')
 
 # Get args
 args = parser.parse_args()
 location = args.location[0]
+specific = args.specific[0]
 
 # Init logging
 logging.basicConfig(level=logging.DEBUG,
                     datefmt="%I:%M:%S",
                     format="[%(asctime)s] %(levelname)s: %(message)s",
                     filename=path.join(location,
-                                       '[abridged-cli] metadata.log'),
+                                       'metadata [abridged-cli].log'),
                     filemode="a")
 
 
@@ -75,7 +81,7 @@ def create_backup(file):
 
 # Run and save ytdl output to log
 def run_ytdl(shell_command):
-    with open(path.join(location, '[abridged-cli] metadata.log'),
+    with open(path.join(location, 'metadata [abridged-cli].log'),
               "a") as outfile:
         subprocess.run(shell_command,
                        shell=True,
@@ -92,9 +98,8 @@ def get_formats(yt_url, ext):
         return format_id
 
 
-# Check attachments
 def check_attachments(filename):
-    with open('script.log', "a") as logfile:
+    with open('metadata [abridged-cli].log', "a") as logfile:
         output = subprocess.run(f"mkvmerge -F json -i \"{filename}\"",
                                 shell=True,
                                 stdout=subprocess.PIPE,
@@ -118,7 +123,6 @@ def check_attachments(filename):
     return thumbnail, info_json
 
 
-# Handle mkv video files
 def handle_mkvs(files, entry_dir):
     for file in files:
         # resolve filename of mkv file
@@ -166,7 +170,6 @@ def handle_mkvs(files, entry_dir):
             logger('MKV - info_json/thumbnail embedded', 'debug')
 
 
-# Handle mp4 video files
 def handle_mp4s(files, entry_dir):
     for file in files:
         filename = path.join(entry_dir, file)
@@ -218,7 +221,6 @@ def handle_mp4s(files, entry_dir):
             logger('MP4 - info_json/thumbnail embedded', 'debug')
 
 
-# Handle webm video files
 def handle_webm(files, entry_dir):
     for file in files:
         filename = path.join(entry_dir, file)
@@ -267,71 +269,70 @@ def handle_webm(files, entry_dir):
             logger('WEBM - info_json/thumbnail embedded', 'debug')
 
 
-def main(loc):
-    logger("Starting metadata checker")
+def handle_base_path(base_path):
+    # Get entry_type dirs in base_path
+    entry_types = os.listdir(base_path)
+    entry_types = [file for file in entry_types if path.isdir(file)]
 
-    # resolve current loc
-    if path.basename(loc) == 'Abridged':
-        path_type = 'abridged_dir'
-    elif path.basename(loc) in ['Series', 'Shots', 'Shorts']:
-        path_type = 'entry_type_dir'
-    else:
-        path_type = 'entry_dir'
+    # Loop through all entry_types
+    for entry_type in entry_types:
+        # Get all entries in entry_type dir
+        entries = os.listdir(path.join(base_path, entry_type))
+        entries = [
+            file for file in entries
+            if path.isdir(path.join(base_path, entry_type, file))
+        ]
 
-    if path_type in ['entry_type_dir', 'abridged_dir']:
-        if path_type == 'entry_type_dir':
-            entry_parents = [location]
-        else:
-            entry_parents = [
-                path.join(location, 'Series'),
-                path.join(location, 'Shots'),
-                path.join(location, 'Shorts')
+        logger(
+            f"Working on ({len(entries)}) directories in [green]{entry_type}[/ green]"
+        )
+
+        # Loop through all entries of entry_type
+        for entry in entries:
+            entry = path.join(base_path, entry_type, entry)
+            logger(f"Processing [blue]'{entry}'[/ blue]")
+
+            # Get all files in entry dir
+            entry_files = os.listdir(entry)
+
+            # Resolve file type
+            video_files_mkv = [
+                file for file in entry_files if file.endswith('.mkv')
+            ]
+            video_files_mp4 = [
+                file for file in entry_files if file.endswith('.mp4')
+            ]
+            video_files_webm = [
+                file for file in entry_files if file.endswith('.webm')
             ]
 
-        for entry_parent in entry_parents:
-            # Get entry dirs in location dir
-            base_dirs = os.listdir(entry_parent)
-            base_dirs = [
-                base_dir for base_dir in base_dirs
-                if path.isdir(path.join(entry_parent, base_dir))
-            ]
+            # Handle mkv files
+            handle_mkvs(video_files_mkv, entry)
+            handle_mp4s(video_files_mp4, entry)
+            handle_webm(video_files_webm, entry)
 
-            logger(
-                f"Working on ({len(base_dirs)}) directories in [green]{path.basename(entry_parent)}[/ green]"
-            )
 
-            for entry_dir in base_dirs:
-                entry_dir = path.join(entry_parent, entry_dir)
-                logger(f"Processing [blue]'{path.basename(entry_dir)}'[/ blue]")
+def handle_entry_type_path(entry_type_path):
+    # Get all entries in entry_type dir
+    entries = os.listdir(entry_type_path)
+    entries = [
+        file for file in entries
+        if path.isdir(path.join(entry_type_path, file))
+    ]
 
-                # Get all files in entry dir
-                entry_files = os.listdir(entry_dir)
+    logger(
+        f"Working on ({len(entries)}) directories in [green]{entry_type_path}[/ green]"
+    )
 
-                video_files_mkv = [
-                    file for file in entry_files if file.endswith('.mkv')
-                ]
-                video_files_mp4 = [
-                    file for file in entry_files if file.endswith('.mp4')
-                ]
-                video_files_webm = [
-                    file for file in entry_files if file.endswith('.webm')
-                ]
-
-                handle_mkvs(video_files_mkv, entry_dir)
-                handle_mp4s(video_files_mp4, entry_dir)
-                handle_webm(video_files_webm, entry_dir)
-
-        logger("[blue]Done![/ blue]")
-        return
-
-    if path_type == 'entry_dir':
-        entry_dir = location
-
-        logger(f"Processing [blue]'{path.basename(entry_dir)}'[/ blue]")
+    # Loop through all entries of entry_type
+    for entry in entries:
+        entry = path.join(entry_type_path, entry)
+        logger(f"Processing [blue]'{entry}'[/ blue]")
 
         # Get all files in entry dir
-        entry_files = os.listdir(entry_dir)
+        entry_files = os.listdir(entry)
 
+        # Resolve file type
         video_files_mkv = [
             file for file in entry_files if file.endswith('.mkv')
         ]
@@ -342,13 +343,66 @@ def main(loc):
             file for file in entry_files if file.endswith('.webm')
         ]
 
-        handle_mkvs(video_files_mkv, entry_dir)
-        handle_mp4s(video_files_mp4, entry_dir)
-        handle_webm(video_files_webm, entry_dir)
+        # Handle mkv files
+        handle_mkvs(video_files_mkv, entry)
+        handle_mp4s(video_files_mp4, entry)
+        handle_webm(video_files_webm, entry)
 
-        logger("Done!")
+
+def handle_entry_path(entry_path):
+    entry = path.join(entry_path)
+    logger(f"Processing [blue]'{entry}'[/ blue]")
+
+    # Get all files in entry dir
+    entry_files = os.listdir(entry)
+
+    # Resolve file type
+    video_files_mkv = [file for file in entry_files if file.endswith('.mkv')]
+    video_files_mp4 = [file for file in entry_files if file.endswith('.mp4')]
+    video_files_webm = [file for file in entry_files if file.endswith('.webm')]
+
+    # Handle mkv files
+    handle_mkvs(video_files_mkv, entry)
+    handle_mp4s(video_files_mp4, entry)
+    handle_webm(video_files_webm, entry)
+
+
+def location_type_handler(abridged_loc, specific_loc) -> str:
+    try:
+        if path.basename(abridged_loc) == path.basename(specific_loc):
+            return 'base_dir'
+
+        if specific_loc.split(path.sep)[-2] == path.basename(abridged_loc):
+            return 'entry_type_dir'
+
+        if specific_loc.split(path.sep)[-3] == path.basename(abridged_loc):
+            return 'entry_dir'
+
+        return None
+    except IndexError:
+        return None
+
+
+def main(abridged_loc, specific_loc):
+    logger("Starting metadata checker")
+
+    # resolve specific location
+    path_type = location_type_handler(abridged_loc, specific_loc)
+
+    # handle resolved path_type
+    if path_type == 'base_dir':
+        handle_base_path(specific_loc)
+    elif path_type == 'entry_type_dir':
+        handle_entry_type_path(specific_loc)
+    elif path_type == 'entry_dir':
+        handle_entry_path(specific_loc)
+    else:
+        logger("[red]Invalid location[/ red]", 'error')
         return
+
+    logger("[blue]Done![/ blue]")
+    return
 
 
 if __name__ == '__main__':
-    main(location)
+    main(location, specific)

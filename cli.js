@@ -24,11 +24,11 @@ OPTIONS
     Spring up FTP server on 0.0.0.0:2121 for the abridged folder
 
     ${chalk.blue('-f, --format')}
-    Format Shorts & Shots entries as per the standard structure
+    Format default entry types as per the standard structure
 
     ${chalk.blue('-m, --metadata')}
     Check and fix video file metadata of all entries
-    Optionally, specify a specify path. Entry/Entry type dirs are valid
+    Optionally, specify entry type or entry path
 
 TUI
     ${chalk.blue('q')} - exit
@@ -162,11 +162,12 @@ async function main() {
     const scriptPath = join(__dirname, '/lib/metadata/metadata.py')
 
     if (args.flags.metadata === '') {
-      metadataChecker(scriptPath, location)
+      metadataChecker(scriptPath, location, location)
     } else {
       const specificPath = resolve(args.flags.metadata)
-      metadataChecker(scriptPath, specificPath)
+      metadataChecker(scriptPath, location, specificPath)
     }
+
     return
   }
 
