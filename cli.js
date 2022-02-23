@@ -21,10 +21,10 @@ Abridged Anime. But in the Terminal!
 
 OPTIONS
     ${chalk.blue('-s, --server')} 
-    Spring up FTP server on 0.0.0.0:2121 for the abridged folder
+    Spring up an FTP server on 0.0.0.0:2121 for the abridged folder
 
     ${chalk.blue('-f, --format')}
-    Format default entry types as per the standard structure
+    Format default entry types as per the guideline
 
     ${chalk.blue('-m, --metadata')}
     Check and fix video file metadata of all entries

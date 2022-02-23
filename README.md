@@ -41,14 +41,14 @@ Abridged Anime. But in the Terminal!
 
 OPTIONS
     -s, --server
-    Springs up a python FTP server on 0.0.0.0:2121 for the abridged folder
+    Spring up an FTP server on 0.0.0.0:2121 for the abridged folder
 
     -f, --format
-    Formats Shorts & Shots entries to the standard structure
+    Format default entry types as per the guideline
 
     -m, --metadata
     Check and fix video file metadata of all entries
-    Optionally, specify a specify path. Entry/Entry type dirs are valid
+    Optionally, specify entry type or entry path
 
 TUI
     q - exit
@@ -93,22 +93,27 @@ TUI
 
 ## Guidelines
 
-### General
+### **General**
 ~~~ ini
 [info.txt]
-This file contains additional information about an entry.
-It may include archival notes, playlist descriptions etc.
+This file is completely optional.
+It contains additional information about an entry.
+Which may include archival notes, playlist descriptions etc.
 
 [videos]
 All videos contain metadata attached to the mkv.
 This includes the video thumbnail, info.json file, general metadata.
+
+[DESC] - Description
+[MODEL] - File Structure
+[EX] - Example
 ~~~
 
-### Series
+### **Series**
 ~~~ ini
 [DESC]
 A set of entries bound by a common relationship.
-They may be common as in an episodic nature.
+They may be common episodically.
 Or common as in by the same creator.
 Definition of common is flexible as long as the relation stands.
 All series entries should have multiple videos.
@@ -140,12 +145,15 @@ Series/
 │  └─ Movie 1 - NiseBOO.mkv
 ~~~
 
-### Shots
+### **Default**
+
+Both `Shots` and `Shorts` belong to this category.
+
 ~~~ ini
 [DESC]
-Videos that cover most of the original shows content.
-Or videos that follow a coherent plot line, original or not.
-All shots should be unit entries.
+Single videos that are not apart of a continuous series.
+They may be random. Or may have a coherent plot.
+What matters is its detachement from any other material.
 
 [MODEL]
 Directory follows "[creator] entry name" scheme
@@ -155,35 +163,15 @@ May contain an "info.txt" file
 
 [EX]
 Shots/
- ├─ [2GS BootLegged] Talking To God/
+ ├─ [UntilDawnCreeps] Yuri Note/
  │  ├─ info.txt
  │  ├─ cover.jpg
  │  └─ 1.mkv
 ~~~
 
-### Shorts
-~~~ ini
-[DESC]
-Videos that are short and cover only a short portion of its original material.
-They may be random as well. Without a coherent story or plot.
-All shorts should be unit entries.
 
-[MODEL]
-Directory follows "[creator] entry name" scheme
-Cover is directly inside. Named "cover"
-Entry video is named "1"
-May contain an "info.txt" file
-
-[EX]
-Shorts/
- ├─ [2GS BootLegged] Talking To God/
- │  ├─ info.txt
- │  ├─ cover.jpg
- │  └─ 1.mkv
-~~~
-
-### yt-dlp
+### Archival
 ~~~ bash
-# command used to archive
+# command I use to download videos
 yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --write-thumbnail --embed-thumbnail --embed-metadata --embed-info-json --remux-video mkv -f <formal> <url>
 ~~~
