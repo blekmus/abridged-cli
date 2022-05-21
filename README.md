@@ -2,36 +2,6 @@
 Abridged Anime. But in the Terminal! <br>
 I use this CLI to manage and watch my local collection/archive of abridged anime.
 
-## File Structure
-```
-Abridged/
-├─ Series/
-│  ├─ [Kurosai] Boundary Bridge/
-│  │  ├─ covers/
-│  │  │  ├─ 1.jpg
-│  │  │  ├─ 2.jpg
-│  │  │  └─ ...
-│  │  ├─ info.txt
-│  │  ├─ Episode 1 - Suck that Meat of Mine.mkv
-│  │  ├─ Episode 2 - Nigasaki in Paris.mkv
-│  │  ├─ OVA 1 - Other.mkv
-│  │  ├─ Movie 1 - Another.mkv
-│  │  └─ ...
-│  └─ ...
-├─ Shots/
-│  ├─ [2GS BootLegged] Talking To God/
-│  │  ├─ info.txt
-│  │  ├─ cover.jpg
-│  │  └─ 1.mkv
-│  └─ ...
-└─ Shorts/
-   ├─ [bearfist] Mekakucity Slackers/
-   │  ├─ info.txt
-   │  ├─ cover.jpg
-   │  ├─ 1.mkv
-   └─ ...
-```
-
 ## Help
 ``` ini
 USAGE
@@ -92,6 +62,36 @@ TUI
 
 
 ## Guidelines
+
+### **File Structure**
+~~~ ini
+Abridged/
+├─ Series/
+│  ├─ [Kurosai] Boundary Bridge/
+│  │  ├─ covers/
+│  │  │  ├─ 1.jpg
+│  │  │  ├─ 2.jpg
+│  │  │  └─ ...
+│  │  ├─ info.txt
+│  │  ├─ Episode 1 - Suck that Meat of Mine.mkv
+│  │  ├─ Episode 2 - Nigasaki in Paris.mkv
+│  │  ├─ OVA 1 - Other.mkv
+│  │  ├─ Movie 1 - Another.mkv
+│  │  └─ ...
+│  └─ ...
+├─ Shots/
+│  ├─ [2GS BootLegged] Talking To God/
+│  │  ├─ info.txt
+│  │  ├─ cover.jpg
+│  │  └─ 1.mkv
+│  └─ ...
+└─ Shorts/
+   ├─ [bearfist] Mekakucity Slackers/
+   │  ├─ info.txt
+   │  ├─ cover.jpg
+   │  ├─ 1.mkv
+   └─ ...
+~~~
 
 ### **General**
 ~~~ ini
@@ -170,7 +170,7 @@ Shots/
 ~~~
 
 
-### Archival
+## Archival
 ~~~ bash
 # command I use to download videos
 yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --write-thumbnail --embed-thumbnail --embed-metadata --embed-info-json --remux-video mkv -f <formal> <url>
