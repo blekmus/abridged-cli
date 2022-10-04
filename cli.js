@@ -120,7 +120,7 @@ async function main() {
     }
   }
 
-  // run shots n shots formatter
+  // run shots n shorts formatter
   if (args.flags.format) {
     await structureFormatter(config.get('location'))
     return
