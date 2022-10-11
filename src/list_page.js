@@ -54,7 +54,7 @@ listPage.on('element keypress', (_sender, _ch, key) => {
   screen.render()
 })
 
-entryList.on('keypress', (_sender, key) => {
+entryList.on('keypress', async (_sender, key) => {
   // entryList navigation
   if (key.name === 'up') {
     entryList.up()
@@ -74,7 +74,7 @@ entryList.on('keypress', (_sender, key) => {
       item.tagTitle === entryList.getSelected()
     ))[0]
 
-    setContentList(state.currentEntry)
+    await setContentList(state.currentEntry)
     setContentInfo(listPage, state.currentEntry)
     contentList.select(0)
 
@@ -83,6 +83,7 @@ entryList.on('keypress', (_sender, key) => {
 
     listPage.append(contentList)
 
+    contentList.setScroll(0)
     contentList.focus()
   }
 

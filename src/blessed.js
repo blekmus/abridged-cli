@@ -1,9 +1,14 @@
 const state = require('./state')
 
 function main(location, entryTypes) {
-  state.location = location
+  const index = entryTypes.indexOf('Other')
+  if (index > -1) {
+    entryTypes.splice(index, 1)
+  }
+
   state.entryTypes = entryTypes
-  state.menuSelected = entryTypes[0]
+  state.location = location
+  state.menuSelected = state.entryTypes[0]
 
   const screen = require('./screen')
   const listPage = require('./list_page')
