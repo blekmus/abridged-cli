@@ -99,28 +99,31 @@ def get_formats(yt_url, ext):
 
 
 def check_attachments(filename):
-    with open('metadata [abridged-cli].log', "a") as logfile:
-        output = subprocess.run(f"mkvmerge -F json -i \"{filename}\"",
-                                shell=True,
-                                stdout=subprocess.PIPE,
-                                stderr=logfile)
+    try:
+        with open('metadata [abridged-cli].log', "a") as logfile:
+            output = subprocess.run(f"mkvmerge -F json -i \"{filename}\"",
+                                    shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=logfile)
 
-        # logger(output.stdout.decode('utf-8'), 'debug')
+            logger(output.stdout.decode('utf-8'), 'debug')
 
-        attachments = json.loads(output.stdout.decode('utf-8'))['attachments']
+            attachments = json.loads(output.stdout.decode('utf-8'))['attachments']
 
-    thumbnail = [
-        item for item in attachments
-        if item['content_type'].startswith('image/')
-    ]
-    info_json = [
-        item for item in attachments if 'info.json' in item['file_name']
-    ]
+        thumbnail = [
+            item for item in attachments
+            if item['content_type'].startswith('image/')
+        ]
+        info_json = [
+            item for item in attachments if 'info.json' in item['file_name'] or 'vid.info.json' in item['file_name']
+        ]
 
-    thumbnail = True if thumbnail != [] else False
-    info_json = True if info_json != [] else False
+        thumbnail = True if thumbnail != [] else False
+        info_json = True if info_json != [] else False
 
-    return thumbnail, info_json
+        return thumbnail, info_json
+    except:
+        return False, False
 
 
 def handle_mkvs(files, entry_dir):
@@ -243,7 +246,7 @@ def handle_webm(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --embed-metadata --embed-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
+            dl_command = f"yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --add-metadata --write-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
 
             logger("WEBM - Running yt-dlp", level='debug')
             logger(dl_command, level='debug')
@@ -270,8 +273,12 @@ def handle_webm(files, entry_dir):
 
 
 def handle_base_path(base_path):
-    # Get entry_type dirs in base_path
+    # Get entry_type dirs in base_path directories
     entry_types = os.listdir(base_path)
+
+    if 'Other' in entry_types:
+        entry_types.remove('Other')
+
     entry_types = [file for file in entry_types if path.isdir(file)]
 
     # Loop through all entry_types
