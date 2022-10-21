@@ -91,6 +91,8 @@ Abridged/
    │  ├─ cover.jpg
    │  ├─ 1.mkv
    └─ ...
+
+Abridged/Other/ <- This directory and all its content are ignored
 ~~~
 
 ### **General**
@@ -173,5 +175,5 @@ Shots/
 ## Archival
 ~~~ bash
 # command I use to download videos
-yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --write-thumbnail --embed-thumbnail --embed-metadata --embed-info-json --remux-video mkv -f <formal> <url>
+yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --write-thumbnail --add-metadata --embed-info-json -f <format> <url>
 ~~~
