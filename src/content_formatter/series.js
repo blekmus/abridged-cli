@@ -4,12 +4,12 @@ function seriesFormatter(name) {
   let type = null
   let itemNum = null
 
-  const episode = name.match(/^\bep\S*\s*\d*(?:(?:\.(?=\d))\d)?/ig)
+  const episode = name.match(/^\bep\S*\s*\d*(?:(?:(?:\.|~)(?=\d))\d)?/ig)
   const ova = name.match(/^\bova\s*\d*(?:(?:\.(?=\d))\d)?/ig)
   const movie = name.match(/^\bmovie\s*\d*(?:(?:\.(?=\d))\d)?/ig)
 
   let title = name
-    .replace(/^\bep\S*\s*\d*(?:(?:\.(?=\d))\d)?/ig, '')
+    .replace(/^\bep\S*\s*\d*(?:(?:(?:\.|~)(?=\d))\d)?/ig, '')
     .replace(/^\bova\s*\d*(?:(?:\.(?=\d))\d)?/ig, '')
     .replace(/^\bmovie\s*\d*(?:(?:\.(?=\d))\d)?/ig, '')
     .replace(/^\s*\-*\s*/ig, '')
@@ -18,8 +18,8 @@ function seriesFormatter(name) {
     title = null
   }
 
-  if (episode) {
-    itemNum = episode[0].match(/\d+|\./ig).join('')
+  if (episode) {  
+    itemNum = episode[0].match(/\d+|\.|~/ig).join('')
     type = 'ep'
   } else if (ova) {
     itemNum = ova[0].match(/\d+|\./ig).join('')
