@@ -75,6 +75,7 @@ Abridged/
 │  │  ├─ info.txt
 │  │  ├─ Episode 1 - Suck that Meat of Mine.mkv
 │  │  ├─ Episode 2 - Nigasaki in Paris.mkv
+│  │  ├─ Episode 3~6 - The Crisis Mode.mkv
 │  │  ├─ OVA 1 - Other.mkv
 │  │  ├─ Movie 1 - Another.mkv
 │  │  └─ ...
@@ -130,6 +131,7 @@ If there is no decimal, follow "Type n"
 Where "Type" is one of "Episode", "OVA", "Movie"
 Where "n.n" is the episode number
 Optionally, use decimals for further classification
+Optionally, use ~ when there are multiple entries in single file
 May contain an "info.txt" file
 
 [EX]
@@ -143,6 +145,7 @@ Series/
 │  ├─ Episode 1 - Pilot.mkv
 │  ├─ Episode 1.5 - Takin it Slow.mkv
 │  ├─ Episode 2 - Banana Tuesdays.mkv
+│  ├─ Episode 4~5 - Combo Day.mkv
 │  ├─ OVA 1 - BROsekoi.mkv
 │  └─ Movie 1 - NiseBOO.mkv
 ~~~
@@ -174,6 +177,6 @@ Shots/
 
 ## Archival
 ~~~ bash
-# command I use to download videos
-yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --write-thumbnail --add-metadata --embed-info-json -f <format> <url>
+# command used to download videos
+yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --write-thumbnail --add-metadata --embed-info-json --convert-thumbnails png -f <format> <url>
 ~~~
