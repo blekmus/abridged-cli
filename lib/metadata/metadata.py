@@ -89,6 +89,33 @@ def run_ytdl(shell_command):
                        stderr=outfile)
 
 
+# delete non png mkv attachments
+def delete_non_png_attachments(filename):
+    with open(path.join(location, 'metadata [abridged-cli].log'),
+              "a") as logfile:
+        output = subprocess.run(f"mkvmerge -F json -i \"{filename}\"",
+                                shell=True,
+                                stdout=subprocess.PIPE,
+                                stderr=logfile)
+
+        attachments = json.loads(output.stdout.decode('utf-8'))['attachments']
+
+    # non png image attachments
+    non_png_attachments = [
+        item for item in attachments
+        if item['content_type'].startswith('image/')
+        and not item['file_name'].endswith('.png')
+    ]
+
+    for attachment in non_png_attachments:
+        logger(
+            f"Deleting non png attachment [blue]{attachment['file_name']}[/ blue]"
+        )
+        subprocess.run(
+            f"mkvpropedit \"{filename}\" --delete-attachment {attachment['id']}",
+            shell=True)
+
+
 # Return correct format for extension
 def get_formats(yt_url, ext):
     with YoutubeDL({'logger': logging}) as ytdl:
@@ -100,7 +127,8 @@ def get_formats(yt_url, ext):
 
 def check_attachments(filename):
     try:
-        with open('metadata [abridged-cli].log', "a") as logfile:
+        with open(path.join(location, 'metadata [abridged-cli].log'),
+                  "a") as logfile:
             output = subprocess.run(f"mkvmerge -F json -i \"{filename}\"",
                                     shell=True,
                                     stdout=subprocess.PIPE,
@@ -108,18 +136,22 @@ def check_attachments(filename):
 
             logger(output.stdout.decode('utf-8'), 'debug')
 
-            attachments = json.loads(output.stdout.decode('utf-8'))['attachments']
+            attachments = json.loads(
+                output.stdout.decode('utf-8'))['attachments']
 
         thumbnail = [
             item for item in attachments
             if item['content_type'].startswith('image/')
         ]
         info_json = [
-            item for item in attachments if 'info.json' in item['file_name'] or 'vid.info.json' in item['file_name']
+            item for item in attachments if 'info.json' in item['file_name']
+            or 'vid.info.json' in item['file_name']
         ]
 
-        thumbnail = True if thumbnail != [] else False
-        info_json = True if info_json != [] else False
+        if thumbnail != []:
+            thumbnail = thumbnail[0]
+        else:
+            thumbnail = False
 
         return thumbnail, info_json
     except:
@@ -150,7 +182,7 @@ def handle_mkvs(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --embed-metadata --embed-info-json --remux-video mkv \"{yt_url}\" -o \"{filename}\""
+            dl_command = f"yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --convert-thumbnails png --embed-thumbnail --embed-metadata --embed-info-json --remux-video mkv \"{yt_url}\" -o \"{filename}\""
 
             logger("MKV - Running yt-dlp", 'debug')
             logger(dl_command, 'debug')
@@ -165,12 +197,29 @@ def handle_mkvs(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --embed-info-json --embed-thumbnail --remux-video mkv \"{yt_url}\" -o \"{filename}\""
+            dl_command = f"yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --embed-info-json --embed-thumbnail --remux-video mkv --convert-thumbnails png \"{yt_url}\" -o \"{filename}\""
 
             logger("MKV - Running yt-dlp", 'debug')
             logger(dl_command, 'debug')
             run_ytdl(dl_command)
             logger('MKV - info_json/thumbnail embedded', 'debug')
+
+            return
+
+        # check if thumbnail is png
+        if thumbnail['content_type'] != 'image/png':
+            logger(f"MKV - Thumbnail is not png - '{path.basename(file)}'",
+                   'warning')
+
+            create_backup(filename)
+
+            dl_command = f"yt-dlp --sub-langs 'en.*,-live_chat' --embed-subs --embed-info-json --embed-thumbnail --remux-video mkv --convert-thumbnails png \"{yt_url}\" -o \"{filename}\""
+
+            logger("MKV - Running yt-dlp", 'debug')
+            logger(dl_command, 'debug')
+            run_ytdl(dl_command)
+            delete_non_png_attachments(filename)
+            logger('MKV - Thumbnail converted to png', 'debug')
 
 
 def handle_mp4s(files, entry_dir):
@@ -198,7 +247,7 @@ def handle_mp4s(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --embed-metadata --embed-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
+            dl_command = f"yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --embed-metadata --convert-thumbnails png --embed-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
 
             logger("MP4 - Running yt-dlp", level='debug')
             logger(dl_command, level='debug')
@@ -216,7 +265,7 @@ def handle_mp4s(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --embed-info-json --embed-thumbnail --remux-video mkv -f {format_id} \"{yt_url}\" -o \"{filename}\""
+            dl_command = f"yt-dlp --embed-info-json --embed-thumbnail --convert-thumbnails png --remux-video mkv -f {format_id} \"{yt_url}\" -o \"{filename}\""
 
             logger("MP4 - Running yt-dlp", 'debug')
             logger(dl_command, 'debug')
@@ -246,7 +295,7 @@ def handle_webm(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --remux-video mkv --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --add-metadata --write-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
+            dl_command = f"yt-dlp --remux-video mkv --convert-thumbnails png --sub-langs 'en.*,-live_chat' --embed-subs --embed-thumbnail --add-metadata --write-info-json \"{yt_url}\" -o \"{filename}\" -f {format_id}"
 
             logger("WEBM - Running yt-dlp", level='debug')
             logger(dl_command, level='debug')
@@ -264,7 +313,7 @@ def handle_webm(files, entry_dir):
 
             create_backup(filename)
 
-            dl_command = f"yt-dlp --embed-info-json --embed-thumbnail --remux-video mkv -f {format_id} \"{yt_url}\" -o \"{filename}\""
+            dl_command = f"yt-dlp --embed-info-json --convert-thumbnails png --embed-thumbnail --remux-video mkv -f {format_id} \"{yt_url}\" -o \"{filename}\""
 
             logger("WEBM - Running yt-dlp", 'debug')
             logger(dl_command, 'debug')
