@@ -23,36 +23,11 @@ OPTIONS
 TUI
     q - exit
     / - search
-    o - open dir
+    o - open directory
     i - add/edit info.txt
+    d - show description
 
-    Press 'Left' and 'Right' arrows to navigate
-    through entry types. Clicking menu items with the
-    cursor does the same thing.
-
-    Press '/' to search. Search only works in the
-    entry list page. When searching, the entry list
-    is non interactive. To make it interactive again
-    the search must be completed by pressing 'Enter'.
-    When typing, pressing 'Delete' will clear the
-    query.
-
-    Pressing 'o' in the entry list menu opens the
-    abridged directory. To visit an entry directory
-    press 'o' inside of an entry item when the
-    content list is in view.
-
-    Scroll using the mouse to navigate faster
-    through a list. However, you cannot open an
-    entry nor can you watch a content item by
-    clicking on it. You must highlight the item
-    and press 'Enter' for it to work.
-
-    Pressing 'i' inside of an entry (content list)
-    will open the text editor defined by
-    $EDITOR or $VISUAL. You can either edit the
-    existing info.txt file or this will create a
-    new one.
+    Use 'Left' and 'Right' arrows to navigate through entry types
 ```
 
 ## Screenshots
@@ -93,7 +68,7 @@ Abridged/
    │  ├─ 1.mkv
    └─ ...
 
-Abridged/Other/ <- This directory and all its content are ignored
+Abridged/Other/ <- This directory and all its contents are ignored by the TUI and formatters
 ~~~
 
 ### **General**

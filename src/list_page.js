@@ -6,11 +6,12 @@ const { writeFile } = require('fs')
 const state = require('./state')
 const { menu, setMenu } = require('./menu')
 const { entryList } = require('./entry_list')
-const  { contentList, setContentList, openItem } = require('./content_list')
+const { contentList, setContentList, openItem } = require('./content_list')
 const listPage = require('./views/list_page_view')
 const { search, input, inputListeners } = require('./search.js')
 const currentPath = require('./current_path')
 const { contentInfo, setContentInfo, contentInfoAbsent } = require('./content_info')
+const { exec } = require('child_process')
 
 
 const openDir = async (loc) => {
@@ -131,6 +132,39 @@ contentList.on('keypress', (_sender, key) => {
         setContentInfo(listPage, state.currentEntry)
       })
     })
+  }
+
+  // display mkv description
+  if (key.name === 'd') {
+    const selectedItem = state.currentContentList.filter((item) => (
+      item.tagTitle === contentList.getSelected()
+    ))[0]
+
+    if (selectedItem.filename.includes('.mkv')) {
+      const loc = path.join(selectedItem.filename)
+      // check if ffprobe is installed
+      exec('which ffprobe', (err, stdout, stderr) => {
+        if (err) {
+          // check if bat is installed
+          exec('which bat', (err, stdout, stderr) => {
+            if (err) {
+              screen.spawn(`sh`, ['-c', `clear && echo "ffprobe is not installed" | less`]);
+            } else {
+              screen.spawn(`sh`, ['-c', `clear && echo "ffprobe is not installed" | bat --paging always`]);
+            }
+          })
+        } else {
+          // check if bat is installed
+          exec('which bat', (err, stdout, stderr) => {
+            if (err) {
+              screen.spawn(`sh`, ['-c', `clear && ffprobe -v quiet -print_format json -show_format -show_streams "${loc}" | jq '.format.tags.DESCRIPTION' --raw-output | less`]);
+            } else {
+              screen.spawn(`sh`, ['-c', `clear && ffprobe -v quiet -print_format json -show_format -show_streams "${loc}" | jq '.format.tags.DESCRIPTION' --raw-output | bat --paging always`]);
+            }
+          })
+        }
+      })
+    }
   }
 
   // from contentList back to entryList

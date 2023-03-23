@@ -13,6 +13,33 @@ const chalk = require('chalk')
 
 require('pretty-error').start()
 
+// Press ${chalk.blue('/')} to search. Search only works in the
+// entry list page. When searching, the entry list
+// is non interactive. To make it interactive again
+// the search must be completed by pressing ${chalk.blue('Enter')}.
+// When typing, pressing ${chalk.blue('Delete')} will clear the
+// query.
+
+// Pressing ${chalk.blue('o')} in the entry list menu opens the
+// abridged directory. To visit an entry directory
+// press ${chalk.blue('o')} inside of an entry item when the
+// content list is in view.
+
+// Scroll using the mouse to navigate faster
+// through a list. However, you cannot open an
+// entry nor can you watch a content item by
+// clicking on it. You must highlight the item
+// and press ${chalk.blue('Enter')} for it to work.
+
+// Pressing ${chalk.blue('i')} inside of an entry
+// will open the text editor defined by
+// $EDITOR or $VISUAL. You can either edit the
+// existing info.txt file or this will create a
+// new one.
+
+// Pressing ${chalk.blue('d')} inside of an entry
+// will show the videos description
+
 const args = meow(`
 USAGE
     ${chalk.blue('abridged-cli [OPTIONS]')}
@@ -33,36 +60,12 @@ OPTIONS
 TUI
     ${chalk.blue('q')} - exit
     ${chalk.blue('/')} - search
-    ${chalk.blue('o')} - open dir
+    ${chalk.blue('o')} - open directory
     ${chalk.blue('i')} - add/edit info.txt
+    ${chalk.blue('d')} - show description
 
-    Press ${chalk.blue('Left')} and ${chalk.blue('Right')} arrows to navigate
-    through entry types. Clicking menu items with the
-    cursor does the same thing.
-
-    Press ${chalk.blue('/')} to search. Search only works in the
-    entry list page. When searching, the entry list
-    is non interactive. To make it interactive again
-    the search must be completed by pressing ${chalk.blue('Enter')}.
-    When typing, pressing ${chalk.blue('Delete')} will clear the
-    query.
-
-    Pressing ${chalk.blue('o')} in the entry list menu opens the
-    abridged directory. To visit an entry directory
-    press ${chalk.blue('o')} inside of an entry item when the
-    content list is in view.
-
-    Scroll using the mouse to navigate faster
-    through a list. However, you cannot open an
-    entry nor can you watch a content item by
-    clicking on it. You must highlight the item
-    and press ${chalk.blue('Enter')} for it to work.
-
-    Pressing ${chalk.blue('i')} inside of an entry (content list)
-    will open the text editor defined by
-    $EDITOR or $VISUAL. You can either edit the
-    existing info.txt file or this will create a
-    new one.
+    Use ${chalk.blue('Left')} and ${chalk.blue('Right')} arrows to navigate
+    through entry types
 `, {
   flags: {
     server: {
