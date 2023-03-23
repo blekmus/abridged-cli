@@ -13,6 +13,7 @@ function seriesFormatter(name) {
     .replace(/^\bova\s*\d*(?:(?:\.(?=\d))\d)?/ig, '')
     .replace(/^\bmovie\s*\d*(?:(?:\.(?=\d))\d)?/ig, '')
     .replace(/^\s*\-*\s*/ig, '')
+    .replace('.mkv', '').replace('.mp4', '').replace('.webm', '')
 
   if (title.match(/^\./ig)) {
     title = null
