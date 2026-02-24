@@ -1,4 +1,4 @@
 ffmpeg==1.4
 pyftpdlib==1.5.6
 rich==13.3.2
-yt_dlp==2024.7.7
+yt_dlp==2026.2.21
